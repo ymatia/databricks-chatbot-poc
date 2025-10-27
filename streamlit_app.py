@@ -15,11 +15,11 @@ prompt = st.text_input('Prompt:')
 if st.button('Submit'):
     if prompt:
         headers = {
-            "Authorization": f"Bearer {api_key}",
+            "Authorization": f"{api_key}",
             "Content-Type": "application/json"
         }
         payload = {
-            "prompt": prompt
+            "content": prompt
         }
 
         try:
