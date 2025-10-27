@@ -31,6 +31,7 @@ if st.button('Submit'):
             message_id = result.get("message_id", "")
             if conversation_id:
                 st.write(f"DEBUG Conversation ID: {conversation_id}")
+                st.write(f"DEBUG Message ID: {message_id}")
 
                 # Poll for completion
                 status_endpoint = f"https://{databricks_host}/api/2.0/genie/conversations/{conversation_id}/messages/{message_id}"
