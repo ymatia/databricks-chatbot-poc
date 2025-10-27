@@ -33,15 +33,6 @@ if st.button('Submit'):
                 st.write(f"DEBUG Conversation ID: {conversation_id}")
                 st.write(f"DEBUG Message ID: {message_id}")
 
-                list_messages_endpoint = f"https://{databricks_host}/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages"
-                list_messages_resp = requests.get(list_messages_endpoint, headers=headers)
-                list_messages_resp.raise_for_status()
-                list_messages_json = list_messages_resp.json()
-                st.write("Messages in Conversation:")
-                st.write(list_messages_json)
-                for message in list_messages_json.get("messages", []):
-                    st.write(message)
-
                 # Poll for completion
                 status_endpoint = f"https://{databricks_host}/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}"
                 status = "NEW"
@@ -54,6 +45,7 @@ if st.button('Submit'):
                     status_json = status_resp.json()
                     status = status_json.get("status", "IN_PROGRESS")
                     if status != "COMPLETED":
+                        st.write(f"Status: {status}. Waiting for completion...")
                         time.sleep(2)
                         retries += 1
 
@@ -61,7 +53,7 @@ if st.button('Submit'):
                     st.write("Genie AI Response:")
                     for att in status_json.get("attachments", []):
                         attachment_id = att.get("attachment_id", "")
-                        response_endpoint = f"/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}/attachments/{attachment_id}/query-result"
+                        response_endpoint = f"https://{databricks_host}/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}/attachments/{attachment_id}/query-result"
                         response_resp = requests.get(response_endpoint, headers=headers)
                         response_resp.raise_for_status()
                         response_json = response_resp.json()
