@@ -27,7 +27,8 @@ if st.button('Submit'):
             response.raise_for_status()
             result = response.json()
             st.write("Genie AI Response:")
-            st.write(result.get("response", "No response field in result."))
+            st.write(result)
+            #st.write(result.get("response", "No response field in result."))
         except Exception as e:
             st.error(f"Error communicating with Databricks Genie AI: {e}")
     else:
