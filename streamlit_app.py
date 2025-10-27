@@ -58,13 +58,14 @@ if st.button('Submit'):
                         retries += 1
 
                 if status == "COMPLETED":
-                    attachment_id = status_json.get("attachment_id", "")
-                    response_endpoint = f"/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}/attachments/{attachment_id}/query-result"
-                    response_resp = requests.get(response_endpoint, headers=headers)
-                    response_resp.raise_for_status()
-                    response_json = response_resp.json()
                     st.write("Genie AI Response:")
-                    st.write(response_json)
+                    for att in status_json.get("attachments", []):
+                        attachment_id = att.get("attachment_id", "")
+                        response_endpoint = f"/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}/attachments/{attachment_id}/query-result"
+                        response_resp = requests.get(response_endpoint, headers=headers)
+                        response_resp.raise_for_status()
+                        response_json = response_resp.json()
+                        st.write(response_json)
                 else:
                     st.warning("Genie AI response did not complete in time.")
 
