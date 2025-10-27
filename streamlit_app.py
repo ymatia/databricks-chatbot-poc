@@ -15,7 +15,7 @@ prompt = st.text_input('Prompt:')
 if st.button('Submit'):
     if prompt:
         headers = {
-            "Authorization": f"{api_key}",
+            "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json"
         }
         payload = {
