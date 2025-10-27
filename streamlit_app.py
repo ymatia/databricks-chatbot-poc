@@ -42,6 +42,32 @@ if st.button('Submit'):
                 for message in list_messages_json.get("messages", []):
                     st.write(message)
 
+                # Poll for completion
+                status_endpoint = f"https://{databricks_host}/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}"
+                status = "NEW"
+                max_retries = 30
+                retries = 0
+                result = None
+                while status != "COMPLETED" and retries < max_retries:
+                    status_resp = requests.get(status_endpoint, headers=headers)
+                    status_resp.raise_for_status()
+                    status_json = status_resp.json()
+                    status = status_json.get("status", "IN_PROGRESS")
+                    if status != "COMPLETED":
+                        time.sleep(2)
+                        retries += 1
+
+                if status == "COMPLETED":
+                    attachment_id = status_json.get("attachment_id", "")
+                    response_endpoint = f"/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}/attachments/{attachment_id}/query-result"
+                    response_resp = requests.get(response_endpoint, headers=headers)
+                    response_resp.raise_for_status()
+                    response_json = response_resp.json()
+                    st.write("Genie AI Response:")
+                    st.write(response_json)
+                else:
+                    st.warning("Genie AI response did not complete in time.")
+
             else:
                 st.warning("No conversation_id returned from Genie AI.")
         except Exception as e:
