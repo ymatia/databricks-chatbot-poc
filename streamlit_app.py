@@ -46,12 +46,13 @@ if st.button('Submit'):
                     status_json = status_resp.json()
                     status = status_json.get("status", "IN_PROGRESS")
                     if status != "COMPLETED":
-                        st.write(f"Status: {status}. Waiting for completion...")
+                        st.session_state['status_placeholder'] = st.empty()
+                        st.session_state['status_placeholder'].write(f"Status: {status}. Waiting for completion...")
                         time.sleep(2)
                         retries += 1
 
                 if status == "COMPLETED":
-                    st.write("Genie AI Response:")
+                    st.session_state['status_placeholder'].write("Genie AI Response:")
                     for att in status_json.get("attachments", []):
                         attachment_id = att.get("attachment_id", "")
                         response_endpoint = f"https://{databricks_host}/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}/attachments/{attachment_id}/query-result"
