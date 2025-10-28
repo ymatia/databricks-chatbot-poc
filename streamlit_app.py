@@ -40,8 +40,8 @@ if st.button('Submit'):
                 max_retries = 30
                 retries = 0
                 result = None
-                with st.status() as status_st:
-                    while status != "COMPLETED" and retries < max_retries:
+                with st.status(label="Working... (click for detailed status)") as status_st:
+                    while retries < max_retries:
                         status_resp = requests.get(status_endpoint, headers=headers)
                         status_resp.raise_for_status()
                         status_json = status_resp.json()
@@ -52,6 +52,7 @@ if st.button('Submit'):
                             retries += 1
                         else:
                             status_st.update(label="Completed!", state="complete")
+                            break
 
                 if status == "COMPLETED":
                     for att in status_json.get("attachments", []):
