@@ -47,7 +47,7 @@ if st.button('Submit'):
                         status_json = status_resp.json()
                         status = status_json.get("status", "IN_PROGRESS").replace("_", " ").title()
                         if status != "Completed":
-                            st.write(label=f"{status}...")
+                            st.write(f"{status}...")
                             time.sleep(2)
                             retries += 1
                         else:
