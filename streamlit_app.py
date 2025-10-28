@@ -2,6 +2,7 @@
 import streamlit as st
 import requests
 import time
+import pandas as pd
 
 databricks_host = "adb-3563412912731739.19.azuredatabricks.net"
 space_id = "01f09ea26052149da9728e72836c8245"
@@ -57,7 +58,19 @@ if st.button('Submit'):
                         response_resp = requests.get(response_endpoint, headers=headers)
                         response_resp.raise_for_status()
                         response_json = response_resp.json()
-                        st.write(response_json)
+
+                        # Visualize the results in a table
+                        statement_response = response_json.get("statement_response", {})
+                        result = statement_response.get("result", {})
+                        manifest = statement_response.get("manifest", {})
+                        columns = [col["name"] for col in manifest.get("schema", {}).get("columns", [])]
+                        data = result.get("data_array", [])
+                        if columns and data:
+                            df = pd.DataFrame(data, columns=columns)
+                            st.dataframe(df)
+                        else:
+                            st.write(response_json)
+
                 else:
                     st.warning("Genie AI response did not complete in time.")
 
