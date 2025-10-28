@@ -45,13 +45,13 @@ if st.button('Submit'):
                         status_resp = requests.get(status_endpoint, headers=headers)
                         status_resp.raise_for_status()
                         status_json = status_resp.json()
-                        status = status_json.get("status", "IN_PROGRESS")
-                        status_st.update(label=f"{status}...")
-                        if status != "COMPLETED":
+                        status = status_json.get("status", "IN_PROGRESS").replace("_", " ").title()
+                        if status != "Completed":
+                            status_st.update(label=f"{status}...")
                             time.sleep(2)
                             retries += 1
                         else:
-                            status.update(label="Completed!", state="complete")
+                            status_st.update(label="Completed!", state="complete")
 
                 if status == "COMPLETED":
                     for att in status_json.get("attachments", []):
