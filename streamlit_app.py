@@ -31,8 +31,8 @@ if st.button('Submit'):
             conversation_id = result.get("conversation_id", "")
             message_id = result.get("message_id", "")
             if conversation_id:
-                st.write(f"DEBUG Conversation ID: {conversation_id}")
-                st.write(f"DEBUG Message ID: {message_id}")
+                # st.write(f"DEBUG Conversation ID: {conversation_id}")
+                # st.write(f"DEBUG Message ID: {message_id}")
 
                 # Poll for completion
                 status_endpoint = f"https://{databricks_host}/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}"
@@ -40,19 +40,18 @@ if st.button('Submit'):
                 max_retries = 30
                 retries = 0
                 result = None
-                while status != "COMPLETED" and retries < max_retries:
-                    status_resp = requests.get(status_endpoint, headers=headers)
-                    status_resp.raise_for_status()
-                    status_json = status_resp.json()
-                    status = status_json.get("status", "IN_PROGRESS")
-                    if status != "COMPLETED":
-                        st.session_state['status_placeholder'] = st.empty()
-                        st.session_state['status_placeholder'].write(f"Status: {status}. Waiting for completion...")
-                        time.sleep(2)
-                        retries += 1
+                with st.status("Working..."):
+                    while status != "COMPLETED" and retries < max_retries:
+                        status_resp = requests.get(status_endpoint, headers=headers)
+                        status_resp.raise_for_status()
+                        status_json = status_resp.json()
+                        status = status_json.get("status", "IN_PROGRESS")
+                        st.write(f"{status}...")
+                        if status != "COMPLETED":
+                            time.sleep(2)
+                            retries += 1
 
                 if status == "COMPLETED":
-                    st.session_state['status_placeholder'].write("Genie AI Response:")
                     for att in status_json.get("attachments", []):
                         attachment_id = att.get("attachment_id", "")
                         response_endpoint = f"https://{databricks_host}/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}/attachments/{attachment_id}/query-result"
