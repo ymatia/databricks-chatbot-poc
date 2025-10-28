@@ -54,7 +54,7 @@ if st.button('Submit'):
                             status_st.update(label="Completed!", state="complete")
                             break
 
-                if status == "COMPLETED":
+                if status == "Completed":
                     for att in status_json.get("attachments", []):
                         attachment_id = att.get("attachment_id", "")
                         response_endpoint = f"https://{databricks_host}/api/2.0/genie/spaces/{space_id}/conversations/{conversation_id}/messages/{message_id}/attachments/{attachment_id}/query-result"
